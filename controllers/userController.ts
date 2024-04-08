@@ -18,8 +18,9 @@ const create = async (req: Request, res: Response) => {
         .json({ error: 'Email already exists' });
     }
 
-    const { valid } = await isEmailValid(email);
+    const valid = isEmailValid(email);
 
+    console.log({ valid });
     if (!valid) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -47,6 +48,19 @@ const create = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: 'Email and Password are required' });
+    }
+
+    const valid = isEmailValid(email);
+    if (!valid) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: 'Please provide a valid email' });
+    }
 
     const user = await User.findOne({ email });
     if (!user)
